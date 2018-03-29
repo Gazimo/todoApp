@@ -1,0 +1,26 @@
+<div class="add-item">
+    <h1>Todos</h1>
+    <input type="text" [(ngModel)]="title" placeholder="What needs to be done?" (keyup.enter)="addItem(title)">
+    <button (click)="addItem(title)">Add</button>
+    <input type="checkbox" #allSelected class="select-all" (click)="selectAll(allSelected.checked)">
+    <div class="error">
+        {{valid}}
+    </div>
+
+
+    <hr>
+    <div class="item" *ngFor="let todo of todos">
+        <input type="checkbox" [(ngModel)]="todo.status" class="status" [ngClass]="{'check': !todo.status}" (click)="changeStatus(todo.id)">
+        <div [ngClass]="{ 'dash': todo.status}">
+            <div class="name">
+                <span style>{{todo.title}}</span>
+            </div>
+            <div class="id">
+                <span style>{{todo.id}}</span>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <button class="clear-btn" *ngIf="todos.length - remainingCount" (click)="clearChecked()">Clear completed</button>
+    <div class="left-items" *ngIf="todos.length"> {{remainingCount}} Items left</div>
+</div>

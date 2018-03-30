@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Todo } from './todo'
 
+const apiUrl = 'api/todos';
+
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
@@ -10,62 +12,47 @@ const httpOptions = {
 @Injectable()
 export class TodoService {
 
-  private todosUrl = 'api/todos';
 
-  constructor(
-    private http: HttpClient ) { }
+  constructor(private http: HttpClient ) { }
 
-    /* Get saved todo list */
-    getTodos (): Observable<Todo[]> {
-      return this.http.get<Todo[]>(this.todosUrl)
-        .pipe(
-          tap(todos => this.log(`fetched todos`))
-          // catchError(this.handleError('getTodos', []))
-        );
-    }
-    
-    addItem (todo: Todo): Observable<Todo> {
-      return this.http.post<Todo>(this.todosUrl, todo, httpOptions).pipe(
-        tap((todo: Todo) => this.log(`added todo task w/ id=${todo.id}`))
-        // catchError(this.handleError<Todo>('addTodo'))
-      );
-    }
+  /* Get saved todo list */
+  public getTodos (): Observable<Todo[]> {
+    return this.http.get<Todo[]>(apiUrl);
+  }
 
-    deleteTodo (todo: Todo ): Observable<Todo> {
-      const id = typeof todo === 'number' ? todo : todo.id;
-      const url = `${this.todosUrl}/${id}`;
-  
-      return this.http.delete<Todo>(url, httpOptions).pipe(
-        tap(_ => this.log(`deleted todo id=${id}`))
-        // catchError(this.handleError<Todo>('deleteTodo'))
-      );
-    }
+  public getTodo(id): Observable<Todo> {
+    let url = `${apiUrl}/${id}`;
+    return this.http.get<Todo>(url);
+  }
 
-    changeStatus(id) {
-      this
-      .map((o) => {
-        if (o.id === id) {
-          o.completed = !o.completed; 
-        }
-      });
+  addItem (todo: Todo): Observable<Todo> {
+    return this.http.post<Todo>(apiUrl, todo, httpOptions);
+  }
 
-    }
-  
-    // clearChecked() {
-    //   this.todos = this.todos.filter(o => !o.completed);
+  deleteTodo(id): Observable<Todo[]> {
+    const url = `${apiUrl}/${id}`;
+    return this.http.delete<Todo[]>(url, httpOptions);
+  }
 
-    // }
-  
-    // selectAll(flag: boolean) {
-    //   this.todos = this.todos.map(todo => {
-    //     return {
-    //       ...todo,
-    //       completed: flag,
-    //     };
-    //   });
-  
-      // this.todos.forEach(todo => todo.status = flag);
-      // this.observeTodo();
-    
+  updateTodo(todo): Observable<any> {
+    return this.http.put(apiUrl, todo, httpOptions);
+  }
+
+  // clearChecked() {
+  //   this.todos = this.todos.filter(o => !o.completed);
+
+  // }
+
+  // selectAll(flag: boolean) {
+  //   this.todos = this.todos.map(todo => {
+  //     return {
+  //       ...todo,
+  //       completed: flag,
+  //     };
+  //   });
+
+  // this.todos.forEach(todo => todo.status = flag);
+  // this.observeTodo();
+
 
 }

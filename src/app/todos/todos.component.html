@@ -2,7 +2,7 @@
     <h1>Todos</h1>
     <input type="text" [(ngModel)]="title" placeholder="What needs to be done?" (keyup.enter)="addItem(title)">
     <button (click)="addItem(title)">Add</button>
-    <input type="checkbox" #allSelected class="select-all" (click)="selectAll(allSelected.checked)">
+    <input type="checkbox" #allSelected class="select-all" (click)="changeAll(allSelected.checked)">
     <div class="error">
         {{valid}}
     </div>
@@ -10,7 +10,11 @@
 
     <hr>
     <div class="item" *ngFor="let todo of todos">
-        <input type="checkbox" [(ngModel)]="todo.status" class="status" [ngClass]="{'check': !todo.status}" (click)="changeStatus(todo.id)">
+        <div class="delete-todo" (click)="deleteTodo(todo.id)">X</div>
+        {{'completed:' + todo.completed}}
+        <input type="checkbox" [(ngModel)]="todo.completed"
+               class="status" (change)="save(todo)"
+               [ngClass]="{'check': !todo.completed}">
         <div [ngClass]="{ 'dash': todo.status}">
             <div class="name">
                 <span style>{{todo.title}}</span>
@@ -19,8 +23,12 @@
                 <span style>{{todo.id}}</span>
             </div>
         </div>
+        <button (click)="getTodo(todo.id)">Get this todo</button>
         <hr>
     </div>
-    <button class="clear-btn" *ngIf="todos.length - remainingCount" (click)="clearChecked()">Clear completed</button>
-    <div class="left-items" *ngIf="todos.length"> {{remainingCount}} Items left</div>
+    <button class="clear-btn" *ngIf="getCompleted().length" (click)="clearComplete()">Clear completed</button>
+    <div class="left-items" *ngIf="getRemaining().length > 0">
+        <strong>{{getRemaining().length}}</strong>
+        {{ getRemaining().length === 1 ? 'item' : 'items'}} left
+    </div>
 </div>
